@@ -2,48 +2,61 @@ import ToDoFunctions.ToDoFunctions as fn
 import FreeSimpleGUI as gui
 
 label = gui.Text("Type in a ToDo:")
-inputBox = gui.InputText(tooltip="Enter ToDo", key="toDo")
+inputBox = gui.InputText(tooltip="Enter ToDo", key="ToDo")
 addButton = gui.Button("Add")
 listBox = gui.Listbox(values=fn.get_todos(), 
-                      key="toDoList", enable_events=True,
+                      key="ToDoList", enable_events=True,
                       size=[45,10])
 editButton = gui.Button("Edit")
+completeButton = gui.Button("Complete")
+exitButton = gui.Button("Exit")
 
 # Show Window
 window = gui.Window("My ToDo App", 
                     layout=[[label], 
                             [inputBox,addButton],
-                            [listBox, editButton]],
+                            [listBox, editButton, completeButton],
+                            [exitButton]],
                     font=("Helvetica",10)) 
 while True:
     event, values = window.read()
-    print(event)
-    print(values)
     if event == "Add":
         # Get ToDo List
-        toDos = fn.get_todos()
+        todos = fn.get_todos()
         # Add new element to ToDo List
-        toDos.append(values["toDo"].title() + "\n")
+        todos.append(values["ToDo"].title() + "\n")
         # Add new ToDo to file
-        fn.write_todos(toDos)
+        fn.write_todos(todos)
         # Add new ToDo to GUI
-        window["toDoList"].update(values=toDos)
-    elif event == "toDoList":
-        window["toDo"].update(value = values["toDoList"][0])
+        window["ToDoList"].update(values=todos)
+    elif event == "ToDoList":
+        window["ToDo"].update(value = values["ToDoList"][0])
 
     elif event == "Edit":
         #
-        toDoToEdit = values["toDoList"][0]
-        newToDo = values["toDo"].title() + "\n"
+        toDoToEdit = values["ToDoList"][0]
+        newToDo = values["ToDo"].title() + "\n"
         # Get an update ToDo List
-        toDos = fn.get_todos()
-        index = toDos.index(toDoToEdit)
-        toDos[index] = newToDo
+        todos = fn.get_todos()
+        index = todos.index(toDoToEdit)
+        todos[index] = newToDo
         # Updte ToDo List file
-        fn.write_todos(toDos)
+        fn.write_todos(todos)
         # Updte ToDo List GUI
-        window["toDoList"].update(values=toDos)
+        window["ToDoList"].update(values=todos)
+    elif event == "Complete":
+        todoToComplete = values["ToDoList"][0]
+        # Get ToDo
+        todos = fn.get_todos()
+        # Delete Todo
+        todos.pop(todoToComplete)
+        # Updade ToDo List file
+        fn.write_todos(todos)
+        # Updade ToDo List GUI
+        window["ToDoList"].update(values=todos)
+        # Update ToDo Inputbox
+        window["ToDo"].update(value = "")
 
-    elif event is None:
+    elif (event is None) or (event == "Exit"):
         break
 window.close()
