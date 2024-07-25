@@ -1,6 +1,13 @@
-import ToDoFunctions.ToDoFunctions as fn
-import FreeSimpleGUI as gui
+import os
 import time
+from src.utils import get_project_root
+import FreeSimpleGUI as gui
+import ToDoFunctions.ToDoFunctions as fn
+
+print(get_project_root())
+if not os.path.exists(get_project_root()):
+    with open(get_project_root(), "w") as file:
+        pass
 
 gui.theme("BrownBlue")
 
@@ -69,7 +76,7 @@ while True:
             # Get ToDo
             todos = fn.get_todos()
             # Delete Todo
-            todos.pop(todoToComplete)
+            todos.remove(todoToComplete)
             # Updade ToDo List file
             fn.write_todos(todos)
             # Updade ToDo List GUI
